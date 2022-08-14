@@ -1,0 +1,22 @@
+{
+  "name": "rovex_enhancer",
+  "version": "1.0.0",
+  "description": "a discord bot to precess images",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon bot.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "discord.js": "^13.10.2",
+    "dotenv": "^16.0.1",
+    "form-data": "^4.0.0",
+    "megajs": "^1.0.6",
+    "node-fetch": "^2.6.7",
+    "nodemon": "^2.0.19",
+    "path": "^0.12.7"
+  }
+}
