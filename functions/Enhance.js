@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const { MessageAttachment } = require("discord.js");
 const icons = require("../utils/icons");
 const folder = "./images";
+const UploadToIBB = require("./UploadToIBB")
 
 require("dotenv").config()
 
@@ -12,7 +13,6 @@ require("dotenv").config()
 const BearerToken = process.env.BEARER_TOKEN
 module.exports = //REMINI enhance
   async function Enhance(url, interaction) { 
-      interaction.editReply({content: icons.loading + " **Enhancing image ...**"})
     //Download the image from url
     let filePath = folder + "/" + crypto.randomUUID() + ".png";
     await get(url, { filename: filePath });
@@ -61,10 +61,9 @@ module.exports = //REMINI enhance
         })
       ).json();
       if (result.status === "completed") {
-        await get(result.result.outputs[0].url, { filename: filePath });
-        let buffer = fs.createReadStream(filePath);
-        let attachment = new MessageAttachment(buffer, filePath);
-        return attachment;
+		    interaction.editReply(icons.loading + " **Uploading Image . . .**")
+        let IBB = await UploadToIBB(result.result.outputs[0].url,600)
+        return IBB;
       }
     }
   };

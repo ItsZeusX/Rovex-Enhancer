@@ -1,16 +1,11 @@
-const get = require("async-get-file");
 const fetch = require("node-fetch");
-const fs = require("fs");
-const crypto = require("crypto");
-const { MessageAttachment } = require("discord.js");
-
-const folder = "./images";
+const icons = require("../utils/icons");
+const UploadToIBB = require("./UploadToIBB")
 
 module.exports = //Returns a messageAttachment with an image without background using app.simplified API
-  async function RemoveBackground(url) {
+  async function RemoveBackground(url,interaction) {
 	let Response = null;
 	let task_id;
-	let attachment;
 	await fetch("https://api.simplified.com/api/v1/growth-tools", {
 	  method: "POST",
 	  headers: { "Content-Type": "application/json" },
@@ -25,7 +20,7 @@ module.exports = //Returns a messageAttachment with an image without background 
 		task_id = json.task_id;
 	  })
 	  .catch((err) => console.log(err));
-  
+	   
 	while (true) {
 	  Response = await (
 		await fetch("https://api.simplified.com/api/v1/tasks/" + task_id, {
@@ -34,11 +29,9 @@ module.exports = //Returns a messageAttachment with an image without background 
 		})
 	  ).json();
 	  if (Response.info != "") {
-		let filePath = folder + "/" + crypto.randomUUID() + ".png";
-		await get(Response.info.data.url, { filename: filePath });
-		let buffer = fs.createReadStream(filePath);
-		attachment = new MessageAttachment(buffer, filePath);
-		return attachment;
+		interaction.editReply(icons.loading + " **Uploading Image . . .**")
+		let IBB = await UploadToIBB(Response.info.data.url , 600)
+		return IBB;
 	  }
 	}
   }

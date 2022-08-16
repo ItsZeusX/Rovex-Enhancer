@@ -5,7 +5,6 @@ const client = new Discord.Client({
 });
 require("dotenv").config()
 
-
 const handlers = require("./handlers");
 handlers.handleEvents(client);
 

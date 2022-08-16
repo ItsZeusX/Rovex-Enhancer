@@ -1,6 +1,8 @@
 const ArtEnhance = require("../functions/ArtEnhance");
 const fs = require("fs");
 const Discord = require("discord.js");
+const { MessageActionRow, MessageButton } = require("discord.js");
+
 const icons = require("../utils/icons");
 
 module.exports = {
@@ -18,25 +20,35 @@ module.exports = {
     try {
       const { options } = interaction;
       await interaction.reply({
-        content: icons.loading + " **The Image is being processed ...**",
+        content: icons.loading + " **Enhancing image . . .**",
         ephemeral: true,
       });
-
+      const start = Date.now()
       //Get a messageAttachment containing a buffer of the result image
-      let imageAttachment = await ArtEnhance(
+      let IBB = await ArtEnhance(
         options.getString("image_url"),
         interaction
       );
+      const stop = Date.now()
       //Send the result image
       await interaction.editReply({
-        content: icons.success + " **Image enhanced successfully**",
-        files: [imageAttachment],
+        content: icons.success + " **Image enhanced successfully**" + `[\u200b](${IBB.data.display_url}) (***${parseInt((stop - start)/1000)}s***)`,
       });
-      //Remove the image from storage (We stored the image path in the attachment's name)
-      fs.unlinkSync(imageAttachment.name);
+      const row = new MessageActionRow().addComponents(
+        new MessageButton()
+          .setLabel("Original")
+          .setURL(options.getString("image_url"))
+          .setStyle("LINK"),
+          new MessageButton()
+          .setLabel("Enhanced")
+          .setURL(IBB.data.url)
+          .setStyle("LINK")
+      
+      );
+      await interaction.editReply({components: [row]})
     } catch (err) {
       console.log(err);
-      interaction.editReply(icons.failed + " **Task failed**");
+      interaction.editReply(icons.failed + " **Task failed !\nPlease use `/compress` or `/resize` and try again**");
     }
   },
 };
